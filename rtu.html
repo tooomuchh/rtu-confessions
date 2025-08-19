@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RTU Floating Confessions</title>
+<style>
+  /* (sab same as tera code tha – ek bhi styling change nahi) */
+  :root{ --min-bubble:90; --max-bubble:200; }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}
+  body{
+    overflow:hidden;color:#fff;
+    background:radial-gradient(1200px 800px at 70% -10%,rgba(58,143,255,.25),transparent 60%),
+               radial-gradient(1000px 700px at -10% 110%,rgba(255,76,172,.2),transparent 60%),
+               linear-gradient(160deg,#0b1020 20%, #101826 60%, #0b1424 100%);
+  }
+  .stars,.stars2,.stars3{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-repeat:repeat;
+    background-image:radial-gradient(2px 2px at 20px 30px,#ffffff80,transparent 40%),
+                     radial-gradient(1.5px 1.5px at 80px 120px,#ffffff70,transparent 40%),
+                     radial-gradient(1.2px 1.2px at 200px 50px,#ffffff60,transparent 40%),
+                     radial-gradient(1.5px 1.5px at 300px 200px,#ffffff70,transparent 40%);
+    animation:twinkle 6s linear infinite;opacity:.7}
+  .stars2{animation-duration:9s;opacity:.5;filter:blur(.5px)}
+  .stars3{animation-duration:12s;opacity:.35;filter:blur(1px)}
+  @keyframes twinkle{0%{transform:translateY(0)}100%{transform:translateY(-30px)}}
+  #bubble-container{position:relative;width:100%;height:100%;z-index:1}
+  .cta{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+    background:linear-gradient(135deg,#6ee7ff,#7c3aed);color:#fff;border:none;
+    padding:14px 20px;border-radius:999px;font-weight:700;letter-spacing:.2px;
+    cursor:pointer;z-index:2;box-shadow:0 10px 30px rgba(110,231,255,.35);
+    transition:transform .15s ease,box-shadow .15s ease,filter .15s ease}
+  .cta:hover{transform:translateX(-50%) scale(1.05);box-shadow:0 14px 36px rgba(110,231,255,.5);filter:saturate(1.15)}
+  .cta:active{transform:translateX(-50%) scale(0.98)}
+  .bubble{position:absolute;display:flex;align-items:center;justify-content:center;
+    text-align:center;padding:10px;border-radius:50%;cursor:pointer;user-select:none;
+    border:2px solid rgba(255,255,255,.35);
+    box-shadow:0 0 24px rgba(255,255,255,.25),inset 0 0 60px rgba(255,255,255,.06);
+    transition:filter .25s ease,transform .25s ease,box-shadow .25s ease;
+    backdrop-filter:blur(1.5px);will-change:transform,left,top}
+  .bubble .preview{pointer-events:none;font-size:14px;line-height:1.2;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.35)}
+  .skin-a{background:radial-gradient(120px 120px at 30% 30%,rgba(120,220,255,.35),rgba(120,220,255,.15) 60%,transparent 70%),rgba(50,130,255,.18)}
+  .skin-b{background:radial-gradient(120px 120px at 30% 30%,rgba(255,140,220,.35),rgba(255,140,220,.12) 60%,transparent 70%),rgba(180,70,255,.16)}
+  .skin-c{background:radial-gradient(120px 120px at 30% 30%,rgba(110,255,190,.35),rgba(110,255,190,.12) 60%,transparent 70%),rgba(40,200,150,.16)}
+  .skin-d{background:radial-gradient(120px 120px at 30% 30%,rgba(255,210,120,.35),rgba(255,210,120,.12) 60%,transparent 70%),rgba(255,170,60,.16)}
+  .bubble:hover{filter:brightness(1.15) saturate(1.15);box-shadow:0 0 38px rgba(255,255,255,.45),inset 0 0 80px rgba(255,255,255,.12);animation:wiggle .45s ease-in-out infinite alternate}
+  @keyframes wiggle{from{transform:rotate(-4deg) scale(1.06)}to{transform:rotate(4deg) scale(1.06)}}
+  .bubble.pop{animation:pop .45s both ease-out}
+  @keyframes pop{to{transform:scale(0);opacity:0;filter:blur(1px)}}
+  .bubble.birth{animation:birth .6s ease-out both}
+  @keyframes birth{0%{transform:scale(.2);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+  .overlay{position:fixed;inset:0;display:none;place-items:center;z-index:3;background:rgba(0,0,0,.55);animation:fadeIn .25s ease both}
+  .overlay.show{display:grid}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .card{width:min(92vw,560px);background:#0f1426;color:#e8eeff;
+    border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:18px 18px 16px;
+    box-shadow:0 20px 60px rgba(0,0,0,.45),inset 0 0 50px rgba(120,160,255,.07);
+    animation:lift .25s ease both}
+  @keyframes lift{from{transform:translateY(10px);opacity:.7}to{transform:none;opacity:1}}
+  .topline{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .pill{font-size:12px;padding:6px 10px;border-radius:999px;
+    background:linear-gradient(135deg,#6ee7ff33,#7c3aed33);color:#cfe9ff;border:1px solid #7dd3fc55}
+  .label{font-size:12px;letter-spacing:.2px;opacity:.75}
+  .val{font-weight:700;margin-bottom:6px;font-size:15px}
+  .text{font-size:16px;line-height:1.55;color:#f4f6ff;white-space:pre-wrap}
+  .close-x{appearance:none;border:none;background:transparent;color:#cdd9ff;font-size:22px;margin-left:auto;cursor:pointer;padding:4px 8px;border-radius:8px}
+  .close-x:hover{background:#ffffff12}
+  .sheet{position:fixed;inset:0;display:none;place-items:end center;z-index:3;
+    background:linear-gradient(0deg,rgba(0,0,0,.55),rgba(0,0,0,.35) 40%,transparent)}
+  .sheet.show{display:grid}
+  .panel{width:min(92vw,560px);background:#0f1426;color:#e8eeff;
+    border:1px solid rgba(255,255,255,.12);border-radius:22px 22px 0 0;padding:18px;
+    box-shadow:0 -10px 40px rgba(0,0,0,.4);animation:rise .25s ease both}
+  @keyframes rise{from{transform:translateY(35px);opacity:.8}to{transform:none;opacity:1}}
+  .panel h3{margin:4px 0 12px;font-size:18px}
+  .row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+  label{font-size:12px;opacity:.8}
+  input,textarea{width:100%;border-radius:12px;border:1px solid #334155;background:#0b1224;
+    color:#e6f0ff;padding:12px 12px;font-size:14px;outline:none;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+  textarea{min-height:110px;resize:vertical}
+  .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
+  .btn{padding:12px 14px;border-radius:12px;font-weight:700;border:none;cursor:pointer}
+  .ghost{background:#ffffff15;color:#dbeafe}
+  .primary{background:linear-gradient(135deg,#6ee7ff,#7c3aed);color:white;box-shadow:0 8px 20px rgba(124,58,237,.35)}
+  .ghost:hover{background:#ffffff22}
+  .primary:hover{filter:saturate(1.1)}
+  @media(max-width:520px){.bubble .preview{font-size:13px}}
+</style>
+</head>
+<body>
+  <div class="stars"></div><div class="stars2"></div><div class="stars3"></div>
+  <div id="bubble-container"></div>
+  <button class="cta" id="open-sheet">Confession ke liye idhar click kr 🙈</button>
+
+  <!-- Admin Mode Button -->
+  <button class="cta" id="admin-btn" style="right:20px;left:auto;bottom:80px;transform:none;">Admin</button>
+
+  <!-- View Modal -->
+  <div class="overlay" id="view">
+    <div class="card">
+      <div class="topline">
+        <span class="pill">New Confession</span>
+        <button class="close-x" id="close-view" aria-label="Close">✕</button>
+      </div>
+      <div class="label">NAME OR HINT about your crush:</div>
+      <div class="val" id="v-name">—</div>
+      <div class="label">Confession:</div>
+      <div class="text" id="v-text">—</div>
+    </div>
+  </div>
+
+  <!-- Submit Sheet -->
+  <div class="sheet" id="sheet">
+    <div class="panel">
+      <h3>Drop your confession anonymously 🤫</h3>
+      <div class="row">
+        <label for="name">NAME OR HINT about your crush</label>
+        <input id="name" placeholder="e.g. CSE ke curly hairs wale, ya 'blue hoodie' 🧿">
+      </div>
+      <div class="row">
+        <label for="conf">Confession</label>
+        <textarea id="conf" placeholder="Yahan likh de dil ki baat..."></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="cancel">Cancel</button>
+        <button class="btn primary" id="submit">Submit</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const seedConfessions=[ /* same as before */ 
+  { name:"Blue hoodie wali from ECE 💙", text:"Tere dimples dekhke attendance bhul jata hu 😅" },
+  { name:"Canteen wali Maggi 🍜", text:"Exam se ek din pehle tum hi bacha sakti ho." },
+  { name:"Bench 3 right window", text:"Every lab mein tumhari pen maangta hu bas baat karne ke liye 🙈" },
+  { name:"Hostel ke 2AM walkers", text:"Chalo kabhi terrace pe chai? ☕" },
+  { name:"Library girl with specs 🤓", text:"Tum padhte hue cutest lagti ho fr." }
+];
+
+const container=document.getElementById('bubble-container');
+const view=document.getElementById('view');
+const closeView=document.getElementById('close-view');
+const vName=document.getElementById('v-name');
+const vText=document.getElementById('v-text');
+
+const sheet=document.getElementById('sheet');
+const openSheet=document.getElementById('open-sheet');
+const cancelSheet=document.getElementById('cancel');
+const submitBtn=document.getElementById('submit');
+const inpName=document.getElementById('name');
+const inpConf=document.getElementById('conf');
+
+const skins=['skin-a','skin-b','skin-c','skin-d'];
+const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+
+let adminMode=false;
+
+function sizeFromText(text){const len=text.length;const px=clamp(Math.round(90+(len/300)*(200-90)),90,200);return px;}
+function randomXY(size){const maxX=window.innerWidth-size;const maxY=window.innerHeight-size;return{x:Math.random()*maxX,y:Math.random()*maxY};}
+
+function spawnBubble(conf,opts={newBirth:false,respawnAfter:false}){
+  const bubble=document.createElement('div');
+  const combined=`${conf.name} — ${conf.text}`;
+  const size=sizeFromText(combined);
+  bubble.className=`bubble ${skins[Math.floor(Math.random()*skins.length)]}`;
+  if(opts.newBirth) bubble.classList.add('birth');
+  bubble.style.width=size+'px';bubble.style.height=size+'px';
+  const {x,y}=randomXY(size);bubble.style.left=x+'px';bubble.style.top=y+'px';
+  const preview=document.createElement('div');
+  preview.className='preview';preview.textContent=(conf.text.length>28?conf.text.slice(0,28)+'…':conf.text);
+  bubble.appendChild(preview);
+
+  bubble.addEventListener('click',()=>{
+    if(adminMode){
+      bubble.remove(); // direct delete
+    }else{
+      bubble.classList.add('pop');
+      setTimeout(()=>openView(conf),180);
+      setTimeout(()=>{
+        bubble.remove();
+        if(opts.respawnAfter){setTimeout(()=>spawnBubble(conf,{newBirth:true,respawnAfter:true}),2800);}
+      },450);
+    }
+  });
+
+  container.appendChild(bubble);
+  drift(bubble,size);
+}
+
+function drift(el,size){
+  let x=parseFloat(el.style.left),y=parseFloat(el.style.top);
+  let dx=(Math.random()-.5)*1.2,dy=(Math.random()-.5)*1.2;
+  function step(){
+    x+=dx;y+=dy;
+    const maxX=window.innerWidth-size;const maxY=window.innerHeight-size;
+    if(x<0||x>maxX) dx*=-1;if(y<0||y>maxY) dy*=-1;
+    el.style.left=x+'px';el.style.top=y+'px';
+    requestAnimationFrame(step);
+  } step();
+}
+
+function openView(conf){vName.textContent=conf.name||'—';vText.textContent=conf.text||'—';view.classList.add('show');}
+closeView.addEventListener('click',()=>view.classList.remove('show'));
+view.addEventListener('click',(e)=>{if(e.target===view) view.classList.remove('show');});
+
+openSheet.addEventListener('click',()=>{sheet.classList.add('show');setTimeout(()=>inpName.focus(),50);});
+cancelSheet.addEventListener('click',()=>sheet.classList.remove('show'));
+sheet.addEventListener('click',(e)=>{if(e.target===sheet) sheet.classList.remove('show');});
+
+submitBtn.addEventListener('click',()=>{
+  const name=inpName.value.trim();const text=inpConf.value.trim();
+  if(!text){inpConf.focus();inpConf.placeholder="Confession likh yaar 😅";return;}
+  const conf={name:name||"Anonymous",text};
+  sheet.classList.remove('show');inpName.value='';inpConf.value='';
+  spawnBubble(conf,{newBirth:true,respawnAfter:true});
+});
+
+function boot(){seedConfessions.forEach(c=>spawnBubble(c,{respawnAfter:true}));}
+boot();
+
+window.addEventListener('resize',()=>{
+  document.querySelectorAll('.bubble').forEach(b=>{
+    const size=parseFloat(getComputedStyle(b).width);
+    const maxX=window.innerWidth-size;const maxY=window.innerHeight-size;
+    let x=parseFloat(b.style.left);let y=parseFloat(b.style.top);
+    if(x>maxX) b.style.left=maxX+'px';if(y>maxY) b.style.top=maxY+'px';
+  });
+});
+
+// ===== Admin Mode =====
+document.getElementById('admin-btn').addEventListener('click',()=>{
+  const pass=prompt("Enter admin password:");
+  if(pass==="193788"){adminMode=!adminMode;alert("Admin mode: "+(adminMode?"ON":"OFF"));}
+  else{alert("Wrong password!");}
+});
+</script>
+</body>
+</html>
